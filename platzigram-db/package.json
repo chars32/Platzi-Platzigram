@@ -1,0 +1,18 @@
+{
+  "name": "platzigram-db",
+  "version": "1.0.0",
+  "description": "Platzigram Database Client",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard" 
+  },
+  "standard":{
+  	"parser": "babel-eslint"
+  },
+  "author": "Carlos Garcia",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^6.1.2", 
+    "standard": "^7.1.2"
+  }
+}
