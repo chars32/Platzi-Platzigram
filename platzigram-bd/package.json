@@ -4,16 +4,25 @@
   "description": "Platzigram Database Client",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "lint": "standard",
     "test": "npm run lint && ava"
   },
   "standard": {
+=======
+    "lint": "standard"
+  },
+  "standard":{
+>>>>>>> 2e72e7ec665036f259c334741c2e5a68681a1da9
     "parser": "babel-eslint"
   },
   "author": "Carlos Garcia",
   "license": "MIT",
   "devDependencies": {
+<<<<<<< HEAD
     "ava": "^0.15.2",
+=======
+>>>>>>> 2e72e7ec665036f259c334741c2e5a68681a1da9
     "babel-eslint": "^6.1.2",
     "standard": "^7.1.2"
   }
