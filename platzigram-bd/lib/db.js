@@ -92,6 +92,32 @@ class Db {
     if (!this.connected) {
       return Promise.reject(new Error('not connected')).asCallback(callback)
     }
+
+    // referenciamos la conexion y base de datos
+    // por que vamos a usar corrutinas(co)
+    let connection = this.connection
+    let db = this.db
+
+    // declaramos nuestra corrutina, recordar que estas funcionan
+    // como las promesas de js.
+    let tasks = co.wrap(function * () {
+      let conn = yield connection
+      image.createdAt = new Date()
+
+      // insertamos la imagen en la base de datos.
+      let result = yield r.db(db).table('images').insert(image).run(conn)
+
+      // si hubiera errores retornamos un reject
+      // recordar que aui Promise funciona con bluebird
+      if (result.errors > 0) {
+        return Promise.reject(new Error(result.first_error))
+      }
+
+      image.id = result.generated_keys[0]
+
+      return Promise.resolve(image)
+    })
+    return Promise.resolve(tasks()).asCallback(callback)
   }
 }
 
