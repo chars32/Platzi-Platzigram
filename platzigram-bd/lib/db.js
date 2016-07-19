@@ -4,6 +4,8 @@
 const co = require('co')
 const r = require('rethinkdb')
 const Promise = require('bluebird')
+const utils = require('./utils')
+const uuid = require('uuid-base62')
 
 // Definimos defaults con los parametros por defecto.
 // Estos parametros podran ser cambiados en el constructor.
@@ -103,6 +105,7 @@ class Db {
     let tasks = co.wrap(function * () {
       let conn = yield connection
       image.createdAt = new Date()
+      image.tags = utils.extractTags(image.description)
 
       // insertamos la imagen en la base de datos.
       let result = yield r.db(db).table('images').insert(image).run(conn)
@@ -112,10 +115,19 @@ class Db {
       if (result.errors > 0) {
         return Promise.reject(new Error(result.first_error))
       }
-
+      // aqui obtenemos el id que le da rethink a nuestra nueva imagen
       image.id = result.generated_keys[0]
 
-      return Promise.resolve(image)
+      // actualizamos el valor a la public_id
+      yield r.db(db).table('images').get(image.id).update({
+        public_id: uuid.encode(image.id)
+      }).run(conn)
+
+      // pasamos la variable create con los valores
+      let created = yield r.db(db).table('images').get(image.id).run(conn)
+
+      // retornamos el valor de created
+      return Promise.resolve(created)
     })
     return Promise.resolve(tasks()).asCallback(callback)
   }
