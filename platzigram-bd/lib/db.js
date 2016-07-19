@@ -161,6 +161,30 @@ class Db {
     })
     return Promise.resolve(tasks()).asCallback(callback)
   }
+
+  // Funcion para obtener imagenes
+  getImage (id, callback) {
+    if (!this.connected) {
+      return Promise.reject(new Error('not connected')).asCallback(callback)
+    }
+
+    // referenciamos la conexion y base de datos
+    // por que vamos a usar corrutinas(co)
+    let connection = this.connection
+    let db = this.db
+    let imageId = uuid.decode(id)
+
+    // declaramos nuestra corrutina, recordar que estas funcionan
+    // como las promesas de js.
+    let tasks = co.wrap(function * () {
+      let conn = yield connection
+
+      let image = yield r.db(db).table('images').get(imageId).run(conn)
+
+      return Promise.resolve(image)
+    })
+    return Promise.resolve(tasks()).asCallback(callback)
+  }
 }
 
 module.exports = Db
