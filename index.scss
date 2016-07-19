@@ -218,4 +218,27 @@ $avatar-size: 48px;
       max-width: 100%;
       max-height: 100%;
     }
+
+    .fa-heart{
+      display: inline-block;
+    }
+  }
+
+  .like-heart{
+    font-size: 10em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    transition: all .2s ease;
+    opacity: 0;
+
+    &.liked {
+      color: $platzigram-red;
+      font-size: 12em;
+      display: block;
+      transition: all .1s ease;
+      opacity: 1;
+    }
   }
