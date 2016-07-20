@@ -64,6 +64,8 @@ class Db {
       let dbTables = yield r.db(db).tableList().run(conn)
       if (dbTables.indexOf('images') === -1) {
         yield r.db(db).tableCreate('images').run(conn)
+        // Creamos un index
+        yield r.db(db).table('images').indexCreate('createdAt').run(conn)
       }
 
       if (dbTables.indexOf('users') === -1) {
@@ -162,7 +164,7 @@ class Db {
     return Promise.resolve(tasks()).asCallback(callback)
   }
 
-  // Funcion para obtener imagenes
+  // Funcion para obtener imagen
   getImage (id, callback) {
     if (!this.connected) {
       return Promise.reject(new Error('not connected')).asCallback(callback)
@@ -182,6 +184,33 @@ class Db {
       let image = yield r.db(db).table('images').get(imageId).run(conn)
 
       return Promise.resolve(image)
+    })
+    return Promise.resolve(tasks()).asCallback(callback)
+  }
+
+  // Funcion para obtener todas las imagenes
+  getImages (callback) {
+    if (!this.connected) {
+      return Promise.reject(new Error('not connected')).asCallback(callback)
+    }
+
+    // referenciamos la conexion y base de datos
+    // por que vamos a usar corrutinas(co)
+    let connection = this.connection
+    let db = this.db
+
+    // declaramos nuestra corrutina, recordar que estas funcionan
+    // como las promesas de js.
+    let tasks = co.wrap(function * () {
+      let conn = yield connection
+
+      let images = yield r.db(db).table('images').orderBy({
+        index: r.desc('createdAt')
+      }).run(conn)
+
+      let result = yield images.toArray()
+
+      return Promise.resolve(result)
     })
     return Promise.resolve(tasks()).asCallback(callback)
   }
