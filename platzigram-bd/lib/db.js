@@ -24,7 +24,7 @@ class Db {
     this.host = options.host || defaults.host
     this.port = options.port || defaults.port
     this.db = options.db || defaults.db
-    this.setup = options.setup || false
+    this.setup = options.setup || false //para saber si usamos test o no
   }
 
   // Esta funcion connect sera la que utilizaremos para poder hacer
