@@ -99,6 +99,7 @@ test('list all images', async t => {
   t.is(created.length, result.length)
 })
 
+// Prueba para guardar usuarios
 test('save user', async t => {
   let db = t.context.db
 

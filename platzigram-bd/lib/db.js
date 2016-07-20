@@ -46,8 +46,8 @@ class Db {
 
     // ------------------------------------------------------------------
     // OJO --> Debido a que en estos ejemplos no usaremos async y wait en
-    // lugar de ellos usaremos el modulo co el cual utiliza yield para
-    // recibir una promise.
+    // lugar de ellos usaremos el modulo "co" el cual utiliza yield para
+    // resolver una promise.
     // ------------------------------------------------------------------
 
     // La variable setup utiliza 'co' para hacer una funcion generadora
@@ -215,7 +215,7 @@ class Db {
     return Promise.resolve(tasks()).asCallback(callback)
   }
 
-   // Funcion para gaurdar usuario
+   // Funcion para guardar usuario
   saveUser (user, callback) {
     if (!this.connected) {
       return Promise.reject(new Error('not connected')).asCallback(callback)
