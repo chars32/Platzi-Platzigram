@@ -66,6 +66,7 @@ class Db {
         yield r.db(db).tableCreate('images').run(conn)
         // Creamos indexs
         yield r.db(db).table('images').indexCreate('createdAt').run(conn)
+        yield r.db(db).table('images').indexCreate('userId', { multi: true }).run(conn)
       }
 
       if (dbTables.indexOf('users') === -1) {
@@ -122,9 +123,9 @@ class Db {
       // aqui obtenemos el id que le da rethink a nuestra nueva imagen
       image.id = result.generated_keys[0]
 
-      // actualizamos el valor a la public_id
+      // actualizamos el valor a la publicId
       yield r.db(db).table('images').get(image.id).update({
-        public_id: uuid.encode(image.id)
+        publicId: uuid.encode(image.id)
       }).run(conn)
 
       // pasamos la variable create con los valores
@@ -217,6 +218,56 @@ class Db {
 
       return Promise.resolve(result)
     })
+    return Promise.resolve(tasks()).asCallback(callback)
+  }
+
+  // Funcion para obtener imagenes por usuario
+  getImagesByUser (userId, password, callback) {
+    if (!this.connected) {
+      return Promise.reject(new Error('not connected')).asCallback(callback)
+    }
+
+    let connection = this.connection
+    let db = this.db
+
+    let tasks = co.wrap(function * () {
+      let conn = yield connection
+
+      yield r.db(db).table('images').indexWait().run(conn)
+      let images = yield r.db(db).table('images').getAll(userId, {
+        index: 'userId'
+      }).orderBy(r.desc('createdAt')).run(conn)
+
+      let result = yield images.toArray()
+
+      return Promise.resolve(result)
+    })
+    return Promise.resolve(tasks()).asCallback(callback)
+  }
+
+  // Funcion para obtener imagenes por tag
+  getImagesByTag (tag, callback) {
+    if (!this.connected) {
+      return Promise.reject(new Error('not connected')).asCallback(callback)
+    }
+
+    let connection = this.connection
+    let db = this.db
+    tag = utils.normalize(tag)
+
+    let tasks = co.wrap(function * () {
+      let conn = yield connection
+
+      yield r.db(db).table('images').indexWait().run(conn)
+      let images = yield r.db(db).table('images').filter((img) => {
+        return img('tags').contains(tag)
+      }).orderBy(r.desc('createdAt')).run(conn)
+
+      let result = yield images.toArray()
+
+      return Promise.resolve(result)
+    })
+
     return Promise.resolve(tasks()).asCallback(callback)
   }
 
