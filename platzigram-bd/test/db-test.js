@@ -116,3 +116,9 @@ test('save user', async t => {
   t.is(typeof created.id, 'string')
   t.truthy(created.createdAt) // truthy verifica que exista un valor
 })
+
+test('authenticate user', async t => {
+  let db = t.context.dbName
+
+  t.is(typeof db.authenticate, 'function', 'authenticate is a function')
+})
