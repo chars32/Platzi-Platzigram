@@ -16,7 +16,7 @@ test.beforeEach('setup database', async t => {
   const dbName = `platzigram_${uuid.v4()}`
 
   // En db almacenaremos la nueva base de datos
-  const db = new Db({ db: dbName })
+  const db = new Db({ db: dbName, setup: true })
 
   await db.connect()
 
@@ -153,6 +153,7 @@ test('authenticate user', async t => {
   t.false(failure)
 })
 
+// Preuba para listar imagenes por usuarios
 test('list images by user', async t => {
   let db = t.context.db
 
@@ -178,6 +179,7 @@ test('list images by user', async t => {
   t.is(result.length, random)
 })
 
+// Preuba para listar imagenes por tags
 test('list images by tag', async t => {
   let db = t.context.db
 

@@ -24,6 +24,7 @@ class Db {
     this.host = options.host || defaults.host
     this.port = options.port || defaults.port
     this.db = options.db || defaults.db
+    this.setup = options.setup || false
   }
 
   // Esta funcion connect sera la que utilizaremos para poder hacer
@@ -43,6 +44,10 @@ class Db {
     // en los diferentes scopes.
     let db = this.db
     let connection = this.connection
+
+    if (!this.setup) {
+      retunr Promise.resolve(connection).asCallback(callback)
+    }
 
     // ------------------------------------------------------------------
     // OJO --> Debido a que en estos ejemplos no usaremos async y wait en
