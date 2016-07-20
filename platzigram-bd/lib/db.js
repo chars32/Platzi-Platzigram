@@ -146,21 +146,20 @@ class Db {
     // por que vamos a usar corrutinas(co)
     let connection = this.connection
     let db = this.db
-    let imageId = uuid.decode(id)
-
+    let getImage = this.getImage.bind(this)
     // declaramos nuestra corrutina, recordar que estas funcionan
     // como las promesas de js.
     let tasks = co.wrap(function * () {
       let conn = yield connection
 
-      let image = yield r.db(db).table('images').get(imageId).run(conn)
+      let image = yield getImage(id)
 
-      yield r.db(db).table('images').get(imageId).update({
+      yield r.db(db).table('images').get(image.id).update({
         liked: true,
         likes: image.likes + 1
       }).run(conn)
 
-      let created = yield r.db(db).table('images').get(imageId).run(conn)
+      let created = yield getImage(id)
       return Promise.resolve(created)
     })
     return Promise.resolve(tasks()).asCallback(callback)
@@ -184,6 +183,10 @@ class Db {
       let conn = yield connection
 
       let image = yield r.db(db).table('images').get(imageId).run(conn)
+
+      if (!image) {
+        return Promise.reject(new Error(`image ${imageId} not found`))
+      }
 
       return Promise.resolve(image)
     })
@@ -292,7 +295,14 @@ class Db {
     let getUser = this.getUser.bind(this)
 
     let tasks = co.wrap(function * () {
-      let user = yield getUser(username)
+      let user = null
+
+      try {
+        user = yield getUser(username)
+      } catch (e) {
+        return Promise.resolve(false)
+      }
+
       if (user.password === utils.encrypt(password)) {
         return Promise.resolve(true)
       }
