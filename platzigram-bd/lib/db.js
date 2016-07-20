@@ -64,12 +64,14 @@ class Db {
       let dbTables = yield r.db(db).tableList().run(conn)
       if (dbTables.indexOf('images') === -1) {
         yield r.db(db).tableCreate('images').run(conn)
-        // Creamos un index
+        // Creamos indexs
         yield r.db(db).table('images').indexCreate('createdAt').run(conn)
       }
 
       if (dbTables.indexOf('users') === -1) {
         yield r.db(db).tableCreate('users').run(conn)
+        // Creamos indexs
+        yield r.db(db).table('users').indexCreate('username').run(conn)
       }
       return conn
     })
@@ -215,7 +217,7 @@ class Db {
     return Promise.resolve(tasks()).asCallback(callback)
   }
 
-   // Funcion para guardar usuario
+  // Funcion para guardar usuario
   saveUser (user, callback) {
     if (!this.connected) {
       return Promise.reject(new Error('not connected')).asCallback(callback)
@@ -246,6 +248,57 @@ class Db {
 
       return Promise.resolve(created)
     })
+    return Promise.resolve(tasks()).asCallback(callback)
+  }
+
+  // Funcion para obtener usuario
+  getUser (username, callback) {
+    if (!this.connected) {
+      return Promise.reject(new Error('not connected')).asCallback(callback)
+    }
+
+    // referenciamos la conexion y base de datos
+    // por que vamos a usar corrutinas(co)
+    let connection = this.connection
+    let db = this.db
+
+    // declaramos nuestra corrutina, recordar que estas funcionan
+    // como las promesas de js.
+    let tasks = co.wrap(function * () {
+      let conn = yield connection
+
+      yield r.db(db).table('users').indexWait().run(conn)
+      let users = yield r.db(db).table('users').getAll(username, {
+        index: 'username'
+      }).run(conn)
+
+      let result = null
+      try {
+        result = yield users.next()
+      } catch (e) {
+        return Promise.reject(new Error(`user ${username} not found`))
+      }
+      return Promise.resolve(result)
+    })
+    return Promise.resolve(tasks()).asCallback(callback)
+  }
+
+  // Funcion para autenticar usuario
+  authenticate (username, password, callback) {
+    if (!this.connected) {
+      return Promise.reject(new Error('not connected')).asCallback(callback)
+    }
+
+    let getUser = this.getUser.bind(this)
+
+    let tasks = co.wrap(function * () {
+      let user = yield getUser(username)
+      if (user.password === utils.encrypt(password)) {
+        return Promise.resolve(true)
+      }
+      return Promise.resolve(false)
+    })
+
     return Promise.resolve(tasks()).asCallback(callback)
   }
 }
