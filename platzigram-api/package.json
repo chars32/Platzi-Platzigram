@@ -1,0 +1,28 @@
+{
+  "name": "platzigram-api",
+  "version": "1.0.0",
+  "description": "Platzigram REST API",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint && ava"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  },
+  "author": "Carlos Garcia Castellanos",
+  "license": "ISC",
+  "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-eslint": "^6.1.2",
+    "standard": "^7.1.2",
+    "test-listen": "^1.0.0"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.11.6",
+    "micro": "^4.1.1",
+    "request": "^2.74.0",
+    "request-promise": "^4.0.2",
+    "uuid-base62": "^0.1.0"
+  }
+}
