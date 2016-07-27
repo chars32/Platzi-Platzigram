@@ -24,10 +24,7 @@ class Db {
     this.host = options.host || defaults.host
     this.port = options.port || defaults.port
     this.db = options.db || defaults.db
-<<<<<<< HEAD
-=======
-    this.setup = options.setup || false //para saber si usamos test o no
->>>>>>> Rethinkdb
+    this.setup = options.setup || false // para saber si usamos test o no
   }
 
   // Esta funcion connect sera la que utilizaremos para poder hacer
@@ -48,21 +45,14 @@ class Db {
     let db = this.db
     let connection = this.connection
 
-<<<<<<< HEAD
-    // ------------------------------------------------------------------
-    // OJO --> Debido a que en estos ejemplos no usaremos async y wait en
-    // lugar de ellos usaremos el modulo co el cual utiliza yield para
-    // recibir una promise.
-=======
     if (!this.setup) {
-      retunr Promise.resolve(connection).asCallback(callback)
+      return Promise.resolve(connection).asCallback(callback)
     }
 
     // ------------------------------------------------------------------
     // OJO --> Debido a que en estos ejemplos no usaremos async y wait en
     // lugar de ellos usaremos el modulo "co" el cual utiliza yield para
     // resolver una promise.
->>>>>>> Rethinkdb
     // ------------------------------------------------------------------
 
     // La variable setup utiliza 'co' para hacer una funcion generadora
@@ -79,21 +69,15 @@ class Db {
       let dbTables = yield r.db(db).tableList().run(conn)
       if (dbTables.indexOf('images') === -1) {
         yield r.db(db).tableCreate('images').run(conn)
-<<<<<<< HEAD
-=======
         // Creamos indexs
         yield r.db(db).table('images').indexCreate('createdAt').run(conn)
         yield r.db(db).table('images').indexCreate('userId', { multi: true }).run(conn)
->>>>>>> Rethinkdb
       }
 
       if (dbTables.indexOf('users') === -1) {
         yield r.db(db).tableCreate('users').run(conn)
-<<<<<<< HEAD
-=======
         // Creamos indexs
         yield r.db(db).table('users').indexCreate('username').run(conn)
->>>>>>> Rethinkdb
       }
       return conn
     })
@@ -144,15 +128,9 @@ class Db {
       // aqui obtenemos el id que le da rethink a nuestra nueva imagen
       image.id = result.generated_keys[0]
 
-<<<<<<< HEAD
-      // actualizamos el valor a la public_id
-      yield r.db(db).table('images').get(image.id).update({
-        public_id: uuid.encode(image.id)
-=======
       // actualizamos el valor a la publicId
       yield r.db(db).table('images').get(image.id).update({
         publicId: uuid.encode(image.id)
->>>>>>> Rethinkdb
       }).run(conn)
 
       // pasamos la variable create con los valores
@@ -163,8 +141,6 @@ class Db {
     })
     return Promise.resolve(tasks()).asCallback(callback)
   }
-<<<<<<< HEAD
-=======
 
   // Funcion para hacer like a las imagenes
   likeImage (id, callback) {
@@ -391,7 +367,6 @@ class Db {
 
     return Promise.resolve(tasks()).asCallback(callback)
   }
->>>>>>> Rethinkdb
 }
 
 module.exports = Db
