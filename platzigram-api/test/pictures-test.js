@@ -50,6 +50,7 @@ test('POST /', async t => {
   t.deepEqual(response.body, image)
 })
 
+// Test para dar like a la imagen
 test('POST /:id/like', async t => {
   let image = fixtures.getImage()
   let url = t.context.url
