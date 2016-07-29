@@ -1,6 +1,6 @@
 'use strict'
 
-import { send } from 'micro'
+import { send, json } from 'micro'
 import HttpHash from 'http-hash'
 import Db from 'platzigram-bd'
 import config from './config'
@@ -13,8 +13,8 @@ if (env === 'test') {
   db = new DbStub()
 }
 
-// solo asi logro que pase las pruebas 
-// por algun motivo no entra al if de arriba 
+// solo asi logro que pase las pruebas
+// por algun motivo no entra al if de arriba
 // ya que el NODE_ENV siempre queda en producción
 db = new DbStub()
 console.log(env)
@@ -27,6 +27,14 @@ hash.set('GET /:id', async function getPicture (req, res, params) {
   let image = await db.getImage(id)
   await db.disconnect()
   send(res, 200, image)
+})
+
+hash.set('POST /', async function postPicture (req, res, params) {
+  let image = await json(req)
+  await db.connect()
+  let created = await db.saveImage(image)
+  await db.disconnect()
+  send(res, 201, created)
 })
 
 export default async function main (req, res) {

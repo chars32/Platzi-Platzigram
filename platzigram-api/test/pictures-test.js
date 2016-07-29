@@ -8,24 +8,47 @@ import request from 'request-promise' // Modulo que me permite httpRequest con P
 import fixtures from './fixtures/'
 import pictures from '../pictures'
 
-// Tes basico para chequear que funcione
+test.beforeEach(async t => {
+  // Creamos un servidor con micro el cual puede ser asincrono
+  let srv = micro(pictures)
+  // listen recibe el srv y crea una url para probarlo
+  t.context.url = await listen(srv)
+})
+
+// Test basico para chequear que funcione
 // obtener imagen por id
 test('GET /:id', async t => {
   // let id = uuid.v4()
   let image = fixtures.getImage()
+  let url = t.context.url
 
-  // Creamos un servidor con micro el cual puede ser asincrono
-  let srv = micro(pictures)
-
-  // listen recibe el srv y crea una url para probarlo
-  let url = await listen(srv)
   // Hacemos la peticion http
   let body = await request({ uri: `${url}/${image.publicId}`, json: true })
   // validamos que el body que retorna es igual al id
   t.deepEqual(body, image)
 })
 
+test('POST /', async t => {
+  let image = fixtures.getImage()
+  let url = t.context.url
+
+  let options = {
+    method: 'POST',
+    uri: url,
+    json: true,
+    body: {
+      description: image.description,
+      src: image.src,
+      userId: image.userId
+    },
+    resolveWithFullResponse: true
+  }
+  let response = await request(options)
+
+  t.is(response.statusCode, 201)
+  t.deepEqual(response.body, image)
+})
+
 // Caracteristica de Ava, se puede definir los test sin necesidad
 // de definir que hace el test, agergando todo
-test.todo('POST /')
 test.todo('POST /:id/like')
