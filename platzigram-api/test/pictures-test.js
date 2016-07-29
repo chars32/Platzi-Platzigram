@@ -28,6 +28,7 @@ test('GET /:id', async t => {
   t.deepEqual(body, image)
 })
 
+// Test para poder hacer post con imagen
 test('POST /', async t => {
   let image = fixtures.getImage()
   let url = t.context.url
@@ -49,6 +50,23 @@ test('POST /', async t => {
   t.deepEqual(response.body, image)
 })
 
+test('POST /:id/like', async t => {
+  let image = fixtures.getImage()
+  let url = t.context.url
+
+  let options = {
+    method: 'POST',
+    uri: `${url}/${image.id}/like`,
+    json: true
+  }
+
+  let body = await request(options)
+  let imageNew = JSON.parse(JSON.stringify(image))
+  imageNew.liked = true
+  imageNew.likes = 1
+
+  t.deepEqual(body, imageNew)
+})
+
 // Caracteristica de Ava, se puede definir los test sin necesidad
 // de definir que hace el test, agergando todo
-test.todo('POST /:id/like')

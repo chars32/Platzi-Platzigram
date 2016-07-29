@@ -20,7 +20,7 @@ db = new DbStub()
 console.log(env)
 
 const hash = HttpHash()
-
+// Ruta para el GET/: id
 hash.set('GET /:id', async function getPicture (req, res, params) {
   let id = params.id
   await db.connect()
@@ -29,12 +29,22 @@ hash.set('GET /:id', async function getPicture (req, res, params) {
   send(res, 200, image)
 })
 
+// Ruta para el POST
 hash.set('POST /', async function postPicture (req, res, params) {
   let image = await json(req)
   await db.connect()
   let created = await db.saveImage(image)
   await db.disconnect()
   send(res, 201, created)
+})
+
+// Ruta para el POST/picture/:id/like
+hash.set('POST /:id/like', async function likePicture (req, res, params) {
+  let id = params.id
+  await db.connect()
+  let image = await db.likeImage(id)
+  await db.disconnect()
+  send(res, 200, image)
 })
 
 export default async function main (req, res) {
