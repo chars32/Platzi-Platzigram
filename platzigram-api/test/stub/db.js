@@ -18,4 +18,19 @@ export default class Db {
   saveImage (image) {
     return Promise.resolve(fixtures.getImage())
   }
+
+  likeImage (id) {
+    let image = fixtures.getImage()
+    image.liked = true
+    image.likes = 1
+    return Promise.resolve(image)
+  }
+
+  getImages () {
+    return Promise.resolve([
+      fixtures.getImage(),
+      fixtures.getImage(),
+      fixtures.getImage()
+    ])
+  }
 }
