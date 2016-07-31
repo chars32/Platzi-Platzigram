@@ -17,10 +17,17 @@ if (env === 'test') {
 // por algun motivo no entra al if de arriba
 // ya que el NODE_ENV siempre queda en producción
 db = new DbStub()
-console.log(env)
 
 const hash = HttpHash()
-// Ruta para el GET/: id
+
+// Ruta para obtener la lista de imagenes
+hash.set('GET /list', async function list (req, res, params) {
+  await db.connect()
+  let images = await db.getImages()
+  await db.disconnect()
+  send(res, 200, images)
+})
+// Ruta para obente imagenes por id
 hash.set('GET /:id', async function getPicture (req, res, params) {
   let id = params.id
   await db.connect()

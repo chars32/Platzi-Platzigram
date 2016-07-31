@@ -69,5 +69,21 @@ test('POST /:id/like', async t => {
   t.deepEqual(body, imageNew)
 })
 
+// Test para lista de imagenes
+test('GET /list', async t => {
+  let images = fixtures.getImages()
+  let url = t.context.url
+
+  let options = {
+    method: 'GET',
+    uri: `${url}/list`,
+    json: true
+  }
+
+  let body = await request(options)
+
+  t.deepEqual(body, images)
+})
+
 // Caracteristica de Ava, se puede definir los test sin necesidad
 // de definir que hace el test, agergando todo
