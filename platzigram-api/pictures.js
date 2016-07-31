@@ -20,6 +20,15 @@ db = new DbStub()
 
 const hash = HttpHash()
 
+// Ruta para obtener imagenes por tag
+hash.set('GET /tag/:tag', async function byTag (req, res, params) {
+  let tag = params.tag
+  await db.connect()
+  let images = await db.getImagesByTag(tag)
+  await db.disconnect()
+  send(res, 200, images)
+})
+
 // Ruta para obtener la lista de imagenes
 hash.set('GET /list', async function list (req, res, params) {
   await db.connect()
