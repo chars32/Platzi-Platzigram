@@ -55,7 +55,7 @@ hash.set('POST /', async function postPicture (req, res, params) {
     let encoded = await utils.verifyToken(token, config.secret)
 
     if (encoded && encoded.userId !== image.userId) {
-      return send(res, 401, { error: 'invalid token' })
+      throw new Error('invalid token')
     }
   } catch (e) {
     return send(res, 401, { error: 'invalid token' })
