@@ -7,6 +7,8 @@ import listen from 'test-listen' // Herramienta para hacer testing de microservi
 import request from 'request-promise' // Modulo que me permite httpRequest con Promise (promesas)
 import fixtures from './fixtures/'
 import pictures from '../pictures'
+import utils from '../lib/utils'
+import config from '../config'
 
 test.beforeEach(async t => {
   // Creamos un servidor con micro el cual puede ser asincrono
@@ -59,8 +61,8 @@ test('GET /tag/:tag', async t => {
 
   t.deepEqual(body, images)
 })
-// Test para poder hacer post con imagen
-test('POST /', async t => {
+// Test cuando no tiene token el POST
+test('no token POST /', async t => {
   let image = fixtures.getImage()
   let url = t.context.url
 
@@ -75,6 +77,53 @@ test('POST /', async t => {
     },
     resolveWithFullResponse: true
   }
+
+  t.throws(request(options), /invalid token/)
+})
+
+// Test cuando es invalido el token en el POST
+test('invalid token POST /', async t => {
+  let image = fixtures.getImage()
+  let url = t.context.url
+  let token = await utils.signToken({ userId: 'hacky' }, config.secret)
+  let options = {
+    method: 'POST',
+    uri: url,
+    json: true,
+    body: {
+      description: image.description,
+      src: image.src,
+      userId: image.userId
+    },
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    resolveWithFullResponse: true
+  }
+
+  t.throws(request(options), /invalid token/)
+})
+
+// Test donde todo funciona correctamente con el POST y token
+test('secure POST /', async t => {
+  let image = fixtures.getImage()
+  let url = t.context.url
+  let token = await utils.signToken({ userId: image.userId }, config.secret)
+  let options = {
+    method: 'POST',
+    uri: url,
+    json: true,
+    body: {
+      description: image.description,
+      src: image.src,
+      userId: image.userId
+    },
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    resolveWithFullResponse: true
+  }
+
   let response = await request(options)
 
   t.is(response.statusCode, 201)
