@@ -34,6 +34,17 @@ hash.set('POST /', async function saveUser (req, res, params) {
   send(res, 201, created)
 })
 
+// Ruta para obtener usuario por su nombre de usaurio
+hash.set('GET /:username', async function getUser (req, res, params) {
+  let username = params.username
+  await db.connect()
+  let user = await db.getUser(username)
+  delete user.email
+  delete user.password
+
+  send(res, 200, user)
+})
+
 export default async function main (req, res) {
   // ------------------------
   let { method, url } = req
