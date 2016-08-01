@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import bearer from 'token-extractor'
 
 export default {
-  async signToken(payload, secret, options) {
+  async signToken (payload, secret, options) {
     return new Promise((resolve, reject) => {
       jwt.sign(payload, secret, options, (err, token) => {
         if (err) return reject(err)
@@ -14,10 +14,10 @@ export default {
     })
   },
 
-  async verifyToken(token, secret, options) {
+  async verifyToken (token, secret, options) {
     return new Promise((resolve, reject) => {
       jwt.verify(token, secret, options, (err, decoded) => {
-        if (err) return reject (err)
+        if (err) return reject(err)
 
         resolve(decoded)
       })
@@ -25,9 +25,9 @@ export default {
   },
 
   async extractToken (req) {
-    return new Promise((resolvem reject) => {
+    return new Promise((resolve, reject) => {
       bearer(req, (err, token) => {
-        if (err) return reject (err)
+        if (err) return reject(err)
 
         resolve(token)
       })
