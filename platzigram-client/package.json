@@ -15,7 +15,13 @@
   "devDependencies": {
     "ava": "^0.15.2",
     "babel-eslint": "^6.1.2",
+    "nock": "^8.0.0",
     "standard": "^7.1.2",
     "uuid-base62": "^0.1.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "request": "^2.74.0",
+    "request-promise": "^4.1.0"
   }
 }
